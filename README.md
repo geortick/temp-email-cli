@@ -13,12 +13,6 @@ A command-line interface tool for creating and managing temporary email addresse
 
 ## Installation
 
-### Global Installation (Recommended)
-```bash
-npm install -g temp-email-cli
-```
-
-### Development Setup
 1. Clone the repository:
    ```bash
    git clone https://github.com/geortick/temp-email-cli.git
