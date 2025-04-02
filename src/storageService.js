@@ -1,6 +1,6 @@
 const fs = require('fs').promises;
 const path = require('path');
-
+const os = require('os');
 /**
  * Service to manage email addresses with persistence and expiration handling
  */
@@ -10,8 +10,14 @@ class StorageService {
    * @param {string} storageFile - Path to the storage file (default: addresses.json)
    * @param {number} expirationDays - Number of days before an address expires (default: 7)
    */
-  constructor(storageFile = 'addresses.json', expirationDays = 7) {
-    this.storageFile = path.resolve(storageFile);
+  constructor(storageFile, expirationDays = 7) {
+    // Use XDG_CONFIG_HOME if available, otherwise use user's home directory
+    const configDir = process.env.XDG_CONFIG_HOME || path.join(os.homedir(), '.config');
+    const defaultDir = path.join(configDir, 'temp-email-cli');
+    const defaultFile = path.join(defaultDir, 'addresses.json');
+    
+    this.storageFile = storageFile ? path.resolve(storageFile) : defaultFile;
+    this.storageDir = path.dirname(this.storageFile);
     this.expirationDays = expirationDays;
     this.initialized = false;
   }
@@ -22,6 +28,15 @@ class StorageService {
    */
   async _initialize() {
     try {
+      // Ensure the directory exists
+      try {
+        await fs.access(this.storageDir);
+      } catch (dirError) {
+        // Directory doesn't exist, create it
+        await fs.mkdir(this.storageDir, { recursive: true });
+      }
+      
+      // Check if file exists
       await fs.access(this.storageFile);
     } catch (error) {
       // File doesn't exist, create it with empty array
