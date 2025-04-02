@@ -93,7 +93,6 @@ class EmailService {
         .join('');
       
       const address = `${username}@${domain}`;
-      console.log(`DEBUG: Generated email address: ${address}`);
       
       return await this.withRetry(async () => {
         // Wait before making request to avoid rate limiting
@@ -173,7 +172,6 @@ class EmailService {
     try {
       return await this.withRetry(async () => {
         const response = await this.client.get('/domains');
-        console.log('DEBUG: Raw domains response:', JSON.stringify(response.data, null, 2));
         
         // Handle direct array response
         if (Array.isArray(response.data) && response.data.length > 0) {
